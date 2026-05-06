@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Job – Job Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <svg width="40" height="40" viewBox="0 0 60 60" style="margin-bottom:8px;">
+            <path d="M30 6 L50 14 L50 30 Q50 44 30 54 Q10 44 10 30 L10 14 Z" fill="none" stroke="white" stroke-width="2"/>
+            <text x="30" y="36" text-anchor="middle" fill="white" font-size="16" font-family="Georgia" font-weight="bold">JT</text>
+        </svg>
+        <h2>Job Tracker</h2>
+        <p>Your career dashboard</p>
+    </div>
+    <nav>
+        <a href="/"><span class="icon">📊</span> Dashboard</a>
+        <a href="/analytics"><span class="icon">📈</span> Analytics</a>
+        <a href="/jobs"><span class="icon">🔍</span> Browse Jobs</a>
+        <a href="/jobs/add" class="active"><span class="icon">➕</span> Add Job</a>
+        <a href="/applications"><span class="icon">📋</span> My Applications</a>
+        <a href="/applications/add"><span class="icon">✏️</span> Add Application</a>
+        <a href="/profile"><span class="icon">👤</span> Profile</a>
+        <a href="/logout"><span class="icon">🚪</span> Logout</a>
+    </nav>
+</aside>
+
+<main class="main">
+    <div class="page-header">
+        <h1>Add a Job</h1>
+        <p>Save a job listing you're interested in.</p>
+    </div>
+
+    <div class="form-card">
+        <form method="POST">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Job Title</label>
+                    <input type="text" name="title" placeholder="e.g. Data Analyst" required>
+                </div>
+                <div class="form-group">
+                    <label>Company</label>
+                    <input type="text" name="company" placeholder="e.g. Amazon" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" name="location" placeholder="e.g. Austin, TX">
+                </div>
+                <div class="form-group">
+                    <label>Work Type</label>
+                    <select name="work_type">
+                        <option value="">Select...</option>
+                        <option value="Remote">Remote</option>
+                        <option value="Onsite">Onsite</option>
+                        <option value="Hybrid">Hybrid</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Employment Type</label>
+                    <select name="employment_type">
+                        <option value="">Select...</option>
+                        <option value="Full-time">Full-time</option>
+                        <option value="Part-time">Part-time</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Internship">Internship</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Salary</label>
+                    <input type="text" name="salary" placeholder="e.g. $70k – $90k">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Source / Portal</label>
+                <input type="text" name="source" placeholder="e.g. LinkedIn, Indeed">
+            </div>
+
+            <div class="form-group">
+                <label>Job URL</label>
+                <input type="url" name="url" placeholder="https://...">
+            </div>
+
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea name="notes" placeholder="Anything noteworthy about this role..."></textarea>
+            </div>
+
+            <div class="card-actions">
+                <button type="submit" class="btn btn-primary">Save Job</button>
+                <a href="/jobs" class="btn btn-ghost">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+</body>
+</html>

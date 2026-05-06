@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Applications – Job Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <svg width="40" height="40" viewBox="0 0 60 60" style="margin-bottom:8px;">
+            <path d="M30 6 L50 14 L50 30 Q50 44 30 54 Q10 44 10 30 L10 14 Z" fill="none" stroke="white" stroke-width="2"/>
+            <text x="30" y="36" text-anchor="middle" fill="white" font-size="16" font-family="Georgia" font-weight="bold">JT</text>
+        </svg>
+        <h2>Job Tracker</h2>
+        <p>Your career dashboard</p>
+    </div>
+    <nav>
+        <a href="/"><span class="icon">📊</span> Dashboard</a>
+        <a href="/analytics"><span class="icon">📈</span> Analytics</a>
+        <a href="/jobs"><span class="icon">🔍</span> Browse Jobs</a>
+        <a href="/jobs/add"><span class="icon">➕</span> Add Job</a>
+        <a href="/applications" class="active"><span class="icon">📋</span> My Applications</a>
+        <a href="/applications/add"><span class="icon">✏️</span> Add Application</a>
+        <a href="/profile"><span class="icon">👤</span> Profile</a>
+        <a href="/logout"><span class="icon">🚪</span> Logout</a>
+    </nav>
+</aside>
+
+<main class="main">
+    <div class="page-header">
+        <h1>My Applications</h1>
+        <p>All the jobs you've tracked and applied to.</p>
+    </div>
+
+    <div class="filter-bar">
+        <input class="search-input" type="text" id="searchInput" placeholder="🔍  Search by company or role...">
+        <select class="filter-select" id="statusFilter">
+            <option value="">All Statuses</option>
+            <option value="Applied">Applied</option>
+            <option value="Interview Scheduled">Interview Scheduled</option>
+            <option value="Offer Received">Offer Received</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Withdrawn">Withdrawn</option>
+        </select>
+        <a href="/applications/add" class="btn btn-primary">+ Add New</a>
+        <a href="/applications/export" class="btn btn-outline">⬇ Export CSV</a>
+    </div>
+
+    {% if applications %}
+    <div class="cards-grid" id="appCards">
+        {% for app in applications %}
+        <div class="job-card" data-company="{{ app.company_name | lower }}" data-title="{{ app.job_title | lower }}" data-status="{{ app.status }}">
+            <div class="job-card-header">
+                <div>
+                    <h3>{{ app.job_title }}</h3>
+                    <div class="company">{{ app.company_name }}</div>
+                </div>
+                {% set s = app.status | lower %}
+                {% if 'interview' in s %}
+                    <span class="badge badge-interview">{{ app.status }}</span>
+                {% elif 'offer' in s %}
+                    <span class="badge badge-offer">{{ app.status }}</span>
+                {% elif 'rejected' in s %}
+                    <span class="badge badge-rejected">{{ app.status }}</span>
+                {% elif 'withdrawn' in s %}
+                    <span class="badge badge-withdrawn">{{ app.status }}</span>
+                {% else %}
+                    <span class="badge badge-applied">{{ app.status }}</span>
+                {% endif %}
+            </div>
+
+            {% if app.priority %}
+            <div>
+                {% if app.priority == 'High' %}
+                    <span class="tag" style="background:#fee2e2; color:#991b1b;">🔴 High Priority</span>
+                {% elif app.priority == 'Medium' %}
+                    <span class="tag" style="background:#fef3c7; color:#b45309;">🟡 Medium Priority</span>
+                {% else %}
+                    <span class="tag" style="background:#d1fae5; color:#065f46;">🟢 Low Priority</span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="meta">
+                {% if app.location %}<span>📍 {{ app.location }}</span>{% endif %}
+                {% if app.work_type %}<span>🏠 {{ app.work_type }}</span>{% endif %}
+                {% if app.employment_type %}<span>💼 {{ app.employment_type }}</span>{% endif %}
+                {% if app.salary_range %}<span>💰 {{ app.salary_range }}</span>{% endif %}
+                {% if app.date_applied %}<span>📅 Applied: {{ app.date_applied }}</span>{% endif %}
+                {% if app.interview_date %}<span>🗓️ Interview: {{ app.interview_date }}</span>{% endif %}
+                {% if app.followup_date %}<span>🔔 Follow-up: {{ app.followup_date }}</span>{% endif %}
+                {% if app.contact_person %}<span>👤 {{ app.contact_person }}</span>{% endif %}
+            </div>
+
+            {% if app.source %}
+            <div style="font-size:0.78rem; color: var(--text-light);">via {{ app.source }}</div>
+            {% endif %}
+
+            {% if app.job_url %}
+            <a href="{{ app.job_url }}" target="_blank" class="btn btn-ghost" style="font-size:0.78rem; padding:4px 10px;">🔗 View Job Posting</a>
+            {% endif %}
+
+            <div class="card-actions">
+                <a href="/applications/detail/{{ app._id }}" class="btn btn-primary">View</a>
+                <a href="/applications/edit/{{ app._id }}" class="btn btn-outline">Edit</a>
+                <form method="POST" action="/applications/withdraw/{{ app._id }}" style="display:inline;">
+                    <button type="submit" class="btn btn-ghost">Withdraw</button>
+                </form>
+                <form method="POST" action="/applications/delete/{{ app._id }}" style="display:inline;" onsubmit="return confirm('Delete this application?')">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>No applications yet</h3>
+        <p>Start tracking your job search journey.</p>
+        <br>
+        <a href="/applications/add" class="btn btn-primary">Add Application</a>
+    </div>
+    {% endif %}
+</main>
+
+<script>
+const searchInput = document.getElementById('searchInput');
+const statusFilter = document.getElementById('statusFilter');
+const cards = document.querySelectorAll('.job-card');
+
+function filterCards() {
+    const query = searchInput.value.toLowerCase();
+    const status = statusFilter.value;
+    cards.forEach(card => {
+        const matchesSearch = card.dataset.company.includes(query) || card.dataset.title.includes(query);
+        const matchesStatus = !status || card.dataset.status === status;
+        card.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+    });
+}
+
+searchInput.addEventListener('input', filterCards);
+statusFilter.addEventListener('change', filterCards);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard – Job Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <svg width="40" height="40" viewBox="0 0 60 60" style="margin-bottom:8px;">
+            <path d="M30 6 L50 14 L50 30 Q50 44 30 54 Q10 44 10 30 L10 14 Z" fill="none" stroke="white" stroke-width="2"/>
+            <text x="30" y="36" text-anchor="middle" fill="white" font-size="16" font-family="Georgia" font-weight="bold">JT</text>
+        </svg>
+        <h2>Job Tracker</h2>
+        <p>Your career dashboard</p>
+    </div>
+    <nav>
+        <a href="/" class="active"><span class="icon">📊</span> Dashboard</a>
+        <a href="/analytics"><span class="icon">📈</span> Analytics</a>
+        <a href="/jobs"><span class="icon">🔍</span> Browse Jobs</a>
+        <a href="/jobs/add"><span class="icon">➕</span> Add Job</a>
+        <a href="/applications"><span class="icon">📋</span> My Applications</a>
+        <a href="/applications/add"><span class="icon">✏️</span> Add Application</a>
+        <a href="/profile"><span class="icon">👤</span> Profile</a>
+        <a href="/logout"><span class="icon">🚪</span> Logout</a>
+    </nav>
+</aside>
+
+<main class="main">
+    <div class="page-header">
+        <h1>Dashboard</h1>
+        <p>Here's a snapshot of your job search progress.</p>
+    </div>
+
+    {% if notifications %}
+    <div style="margin-bottom: 24px;">
+        <div style="background:#fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 16px 20px;">
+            <div style="font-weight:600; color:#b45309; margin-bottom:10px;">🔔 Follow-up Needed ({{ notifications|length }})</div>
+            {% for n in notifications %}
+            <div style="font-size:0.85rem; color:#92400e; margin-bottom:6px;">
+                ⚠️ <strong>{{ n.company_name }}</strong> — {{ n.job_title }} — Applied: {{ n.date_applied }} — No update in 14+ days
+                <a href="/applications/edit/{{ n._id }}" style="margin-left:8px; color:#b45309; font-weight:600;">Update →</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total</div>
+            <div class="stat-number">{{ stats.total }}</div>
+        </div>
+        <div class="stat-card blue">
+            <div class="stat-label">Applied</div>
+            <div class="stat-number">{{ stats.applied }}</div>
+        </div>
+        <div class="stat-card amber">
+            <div class="stat-label">Interview</div>
+            <div class="stat-number">{{ stats.interview }}</div>
+        </div>
+        <div class="stat-card green">
+            <div class="stat-label">Offer</div>
+            <div class="stat-number">{{ stats.offer }}</div>
+        </div>
+        <div class="stat-card red">
+            <div class="stat-label">Rejected</div>
+            <div class="stat-number">{{ stats.rejected }}</div>
+        </div>
+        <div class="stat-card gray">
+            <div class="stat-label">Withdrawn</div>
+            <div class="stat-number">{{ stats.withdrawn }}</div>
+        </div>
+    </div>
+
+    <div class="page-header" style="margin-bottom: 16px;">
+        <h1 style="font-size: 1.3rem;">Recent Applications</h1>
+    </div>
+
+    {% if recent_apps %}
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Role</th>
+                    <th>Date Applied</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in recent_apps %}
+                <tr>
+                    <td><strong>{{ app.company_name }}</strong></td>
+                    <td>{{ app.job_title }}</td>
+                    <td>{{ app.date_applied }}</td>
+                    <td>
+                        {% set s = app.status | lower %}
+                        {% if 'interview' in s %}
+                            <span class="badge badge-interview">{{ app.status }}</span>
+                        {% elif 'offer' in s %}
+                            <span class="badge badge-offer">{{ app.status }}</span>
+                        {% elif 'rejected' in s %}
+                            <span class="badge badge-rejected">{{ app.status }}</span>
+                        {% elif 'withdrawn' in s %}
+                            <span class="badge badge-withdrawn">{{ app.status }}</span>
+                        {% else %}
+                            <span class="badge badge-applied">{{ app.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="/applications/detail/{{ app._id }}" class="btn btn-primary" style="padding:5px 12px;">View</a>
+                        <a href="/applications/edit/{{ app._id }}" class="btn btn-outline" style="padding:5px 12px;">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>No applications yet</h3>
+        <p>Start tracking by adding your first application.</p>
+        <br>
+        <a href="/applications/add" class="btn btn-primary">Add Application</a>
+    </div>
+    {% endif %}
+</main>
+
+</body>
+</html>

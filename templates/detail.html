@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Detail – Job Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <svg width="40" height="40" viewBox="0 0 60 60" style="margin-bottom:8px;">
+            <path d="M30 6 L50 14 L50 30 Q50 44 30 54 Q10 44 10 30 L10 14 Z" fill="none" stroke="white" stroke-width="2"/>
+            <text x="30" y="36" text-anchor="middle" fill="white" font-size="16" font-family="Georgia" font-weight="bold">JT</text>
+        </svg>
+        <h2>Job Tracker</h2>
+        <p>Your career dashboard</p>
+    </div>
+    <nav>
+        <a href="/"><span class="icon">📊</span> Dashboard</a>
+        <a href="/analytics"><span class="icon">📈</span> Analytics</a>
+        <a href="/jobs"><span class="icon">🔍</span> Browse Jobs</a>
+        <a href="/jobs/add"><span class="icon">➕</span> Add Job</a>
+        <a href="/applications" class="active"><span class="icon">📋</span> My Applications</a>
+        <a href="/applications/add"><span class="icon">✏️</span> Add Application</a>
+        <a href="/profile"><span class="icon">👤</span> Profile</a>
+        <a href="/logout"><span class="icon">🚪</span> Logout</a>
+    </nav>
+</aside>
+
+<main class="main">
+    <div class="page-header">
+        <h1>{{ app.job_title }}</h1>
+        <p>{{ app.company_name }}</p>
+    </div>
+
+    <div class="form-card" style="max-width: 100%;">
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+            {% set s = app.status | lower %}
+            {% if 'interview' in s %}
+                <span class="badge badge-interview" style="font-size:0.9rem; padding: 8px 16px;">{{ app.status }}</span>
+            {% elif 'offer' in s %}
+                <span class="badge badge-offer" style="font-size:0.9rem; padding: 8px 16px;">{{ app.status }}</span>
+            {% elif 'rejected' in s %}
+                <span class="badge badge-rejected" style="font-size:0.9rem; padding: 8px 16px;">{{ app.status }}</span>
+            {% elif 'withdrawn' in s %}
+                <span class="badge badge-withdrawn" style="font-size:0.9rem; padding: 8px 16px;">{{ app.status }}</span>
+            {% else %}
+                <span class="badge badge-applied" style="font-size:0.9rem; padding: 8px 16px;">{{ app.status }}</span>
+            {% endif %}
+
+            {% if app.priority %}
+                {% if app.priority == 'High' %}
+                    <span class="tag" style="background:#fee2e2; color:#991b1b; font-size:0.85rem;">🔴 High Priority</span>
+                {% elif app.priority == 'Medium' %}
+                    <span class="tag" style="background:#fef3c7; color:#b45309; font-size:0.85rem;">🟡 Medium Priority</span>
+                {% else %}
+                    <span class="tag" style="background:#d1fae5; color:#065f46; font-size:0.85rem;">🟢 Low Priority</span>
+                {% endif %}
+            {% endif %}
+
+            <div class="card-actions" style="margin: 0;">
+                <a href="/applications/edit/{{ app._id }}" class="btn btn-outline">Edit</a>
+                <form method="POST" action="/applications/withdraw/{{ app._id }}" style="display:inline;">
+                    <button type="submit" class="btn btn-ghost">Withdraw</button>
+                </form>
+                <form method="POST" action="/applications/delete/{{ app._id }}" style="display:inline;" onsubmit="return confirm('Delete this application?')">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+
+            <div>
+                <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-light); margin-bottom:4px;">Company</div>
+                <div style="font-size:1rem; font-weight:600; color:var(--text-dark);">{{ app.company_name }}</div>
+            </div>
+
+            <div>
+                <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-light); margin-bottom:4px;">Job Title</div>
+                <div style="font-size:1rem; font-weight:600; color:var(--text-dark);">{{ app.job_title }}</div>
+            </div>
+
+            <div>
+                <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-light); margin-bottom:4px;">Date Applied</div>
+                <div>{{ app.date_applied or '—' }}</div>
+            </div>
+
+            <div>
+                <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-light); margin-bottom:4px;">Interview Date</div>
+                <div>{{ app.interview_date or '—' }}</div>
+            </div>
+
+            <div>
+                <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-light); margin-bottom:4px;">Location</div>
+                <div>{{ app.location or '—' }}</div>
+            </div>
+
+            <div>
+                <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-light); margin-bottom:4px;">Work Type</div>
+                <div>{{ app.work_type or '—' }}</div>
+            </div>
+
+            <div>
+                <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-light); margin-bottom:4px;">Employment Type</div>
+                <div>{{ app.employment_type or '—' }}</div>
+            </div>
+
+            <div>
+                <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-light); margin-bottom:4px;">Salary Range</div>
+                <div>{{ app.salary_range or '—' }}</div>
+            </div>
+
+            <div>
+                <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-light); margin-bottom:4px;">Contact / Recruiter</div>
+                <div>{{ app.contact_person or '—' }}</div>
+            </div>
+
+            <div>
+                <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-light); margin-bottom:4px;">Follow-up Date</div>
+                <div>{{ app.followup_date or '—' }}</div>
+            </div>
+
+            <div>
+                <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-light); margin-bottom:4px;">Source / Portal</div>
+                <div>{{ app.source or '—' }}</div>
+            </div>
+
+            <div>
+                <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-light); margin-bottom:4px;">Job URL</div>
+                <div>
+                    {% if app.job_url %}
+                        <a href="{{ app.job_url }}" target="_blank" class="btn btn-ghost" style="padding:4px 10px; font-size:0.8rem;">🔗 View Posting</a>
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        {% if app.notes %}
+        <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border);">
+            <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-light); margin-bottom:8px;">Notes</div>
+            <div style="font-size:0.92rem; color:var(--text-dark); line-height:1.6;">{{ app.notes }}</div>
+        </div>
+        {% endif %}
+
+        <div style="margin-top: 24px;">
+            <a href="/applications" class="btn btn-ghost">← Back to My Applications</a>
+        </div>
+
+    </div>
+</main>
+
+</body>
+</html>

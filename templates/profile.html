@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile – Job Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <svg width="40" height="40" viewBox="0 0 60 60" style="margin-bottom:8px;">
+            <path d="M30 6 L50 14 L50 30 Q50 44 30 54 Q10 44 10 30 L10 14 Z" fill="none" stroke="white" stroke-width="2"/>
+            <text x="30" y="36" text-anchor="middle" fill="white" font-size="16" font-family="Georgia" font-weight="bold">JT</text>
+        </svg>
+        <h2>Job Tracker</h2>
+        <p>Your career dashboard</p>
+    </div>
+    <nav>
+        <a href="/"><span class="icon">📊</span> Dashboard</a>
+        <a href="/analytics"><span class="icon">📈</span> Analytics</a>
+        <a href="/jobs"><span class="icon">🔍</span> Browse Jobs</a>
+        <a href="/jobs/add"><span class="icon">➕</span> Add Job</a>
+        <a href="/applications"><span class="icon">📋</span> My Applications</a>
+        <a href="/applications/add"><span class="icon">✏️</span> Add Application</a>
+        <a href="/profile" class="active"><span class="icon">👤</span> Profile</a>
+        <a href="/logout"><span class="icon">🚪</span> Logout</a>
+    </nav>
+</aside>
+
+<main class="main">
+    <div class="page-header">
+        <h1>My Profile</h1>
+        <p>Manage your personal information.</p>
+    </div>
+
+    <div class="form-card">
+        <form method="POST">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name" value="{{ user.name or '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="text" value="{{ user.email }}" disabled style="opacity:0.6;">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Target Job Title</label>
+                    <input type="text" name="target_title" value="{{ user.target_title or '' }}" placeholder="e.g. Data Analyst">
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" name="location" value="{{ user.location or '' }}" placeholder="e.g. New York, NY">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>LinkedIn URL</label>
+                <input type="url" name="linkedin" value="{{ user.linkedin or '' }}" placeholder="https://linkedin.com/in/yourname">
+            </div>
+
+            <div class="form-group">
+                <label>Bio</label>
+                <textarea name="bio" placeholder="Tell us a bit about yourself...">{{ user.bio or '' }}</textarea>
+            </div>
+
+            <div class="card-actions">
+                <button type="submit" class="btn btn-primary">Save Profile</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+</body>
+</html>

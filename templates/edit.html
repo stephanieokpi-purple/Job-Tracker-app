@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Application – Job Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <svg width="40" height="40" viewBox="0 0 60 60" style="margin-bottom:8px;">
+            <path d="M30 6 L50 14 L50 30 Q50 44 30 54 Q10 44 10 30 L10 14 Z" fill="none" stroke="white" stroke-width="2"/>
+            <text x="30" y="36" text-anchor="middle" fill="white" font-size="16" font-family="Georgia" font-weight="bold">JT</text>
+        </svg>
+        <h2>Job Tracker</h2>
+        <p>Your career dashboard</p>
+    </div>
+    <nav>
+        <a href="/"><span class="icon">📊</span> Dashboard</a>
+        <a href="/analytics"><span class="icon">📈</span> Analytics</a>
+        <a href="/jobs"><span class="icon">🔍</span> Browse Jobs</a>
+        <a href="/jobs/add"><span class="icon">➕</span> Add Job</a>
+        <a href="/applications" class="active"><span class="icon">📋</span> My Applications</a>
+        <a href="/applications/add"><span class="icon">✏️</span> Add Application</a>
+        <a href="/profile"><span class="icon">👤</span> Profile</a>
+        <a href="/logout"><span class="icon">🚪</span> Logout</a>
+    </nav>
+</aside>
+
+<main class="main">
+    <div class="page-header">
+        <h1>Edit Application</h1>
+        <p>Update the details for this application.</p>
+    </div>
+
+    <div class="form-card">
+        <form method="POST">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Company Name</label>
+                    <input type="text" name="company_name" value="{{ app.company_name }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Job Title</label>
+                    <input type="text" name="job_title" value="{{ app.job_title }}" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date Applied</label>
+                    <input type="date" name="date_applied" value="{{ app.date_applied }}" required>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="status" required>
+                        {% for s in ['Applied', 'Interview Scheduled', 'Offer Received', 'Rejected', 'Withdrawn'] %}
+                        <option value="{{ s }}" {% if app.status == s %}selected{% endif %}>{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select name="priority">
+                        {% for p in ['', 'High', 'Medium', 'Low'] %}
+                        <option value="{{ p }}" {% if app.priority == p %}selected{% endif %}>{{ p if p else 'Select...' }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Interview Date</label>
+                    <input type="date" name="interview_date" value="{{ app.interview_date }}">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" name="location" value="{{ app.location }}">
+                </div>
+                <div class="form-group">
+                    <label>Work Type</label>
+                    <select name="work_type">
+                        {% for w in ['', 'Remote', 'Onsite', 'Hybrid'] %}
+                        <option value="{{ w }}" {% if app.work_type == w %}selected{% endif %}>{{ w if w else 'Select...' }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Employment Type</label>
+                    <select name="employment_type">
+                        {% for e in ['', 'Full-time', 'Part-time', 'Contract', 'Internship'] %}
+                        <option value="{{ e }}" {% if app.employment_type == e %}selected{% endif %}>{{ e if e else 'Select...' }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Salary Range</label>
+                    <input type="text" name="salary_range" value="{{ app.salary_range }}">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Contact Person / Recruiter</label>
+                    <input type="text" name="contact_person" value="{{ app.contact_person }}">
+                </div>
+                <div class="form-group">
+                    <label>Follow-up Reminder Date</label>
+                    <input type="date" name="followup_date" value="{{ app.followup_date }}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Job URL</label>
+                <input type="url" name="job_url" value="{{ app.job_url }}" placeholder="https://...">
+            </div>
+
+            <div class="form-group">
+                <label>Job Portal / Source</label>
+                <input type="text" name="source" value="{{ app.source }}">
+            </div>
+
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea name="notes">{{ app.notes }}</textarea>
+            </div>
+
+            <div class="card-actions">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="/applications" class="btn btn-ghost">Cancel</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Jobs – Job Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <svg width="40" height="40" viewBox="0 0 60 60" style="margin-bottom:8px;">
+            <path d="M30 6 L50 14 L50 30 Q50 44 30 54 Q10 44 10 30 L10 14 Z" fill="none" stroke="white" stroke-width="2"/>
+            <text x="30" y="36" text-anchor="middle" fill="white" font-size="16" font-family="Georgia" font-weight="bold">JT</text>
+        </svg>
+        <h2>Job Tracker</h2>
+        <p>Your career dashboard</p>
+    </div>
+    <nav>
+        <a href="/"><span class="icon">📊</span> Dashboard</a>
+        <a href="/analytics"><span class="icon">📈</span> Analytics</a>
+        <a href="/jobs" class="active"><span class="icon">🔍</span> Browse Jobs</a>
+        <a href="/jobs/add"><span class="icon">➕</span> Add Job</a>
+        <a href="/applications"><span class="icon">📋</span> My Applications</a>
+        <a href="/applications/add"><span class="icon">✏️</span> Add Application</a>
+        <a href="/profile"><span class="icon">👤</span> Profile</a>
+        <a href="/logout"><span class="icon">🚪</span> Logout</a>
+    </nav>
+</aside>
+
+<main class="main">
+    <div class="page-header">
+        <h1>Browse Jobs</h1>
+        <p>Jobs you've saved or are considering applying to.</p>
+    </div>
+
+    <div class="filter-bar">
+        <input class="search-input" type="text" id="searchInput" placeholder="🔍  Search jobs...">
+        <select class="filter-select" id="typeFilter">
+            <option value="">All Types</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
+            <option value="Internship">Internship</option>
+        </select>
+        <select class="filter-select" id="workFilter">
+            <option value="">All Work Modes</option>
+            <option value="Remote">Remote</option>
+            <option value="Onsite">Onsite</option>
+            <option value="Hybrid">Hybrid</option>
+        </select>
+        <a href="/jobs/add" class="btn btn-primary">+ Add Job</a>
+    </div>
+
+    {% if jobs %}
+    <div class="cards-grid" id="jobCards">
+        {% for job in jobs %}
+        <div class="job-card"
+             data-title="{{ job.title | lower }}"
+             data-company="{{ job.company | lower }}"
+             data-type="{{ job.employment_type }}"
+             data-work="{{ job.work_type }}">
+            <div class="job-card-header">
+                <div>
+                    <h3>{{ job.title }}</h3>
+                    <div class="company">{{ job.company }}</div>
+                </div>
+            </div>
+
+            <div class="meta">
+                {% if job.location %}<span>📍 {{ job.location }}</span>{% endif %}
+                {% if job.salary %}<span>💰 {{ job.salary }}</span>{% endif %}
+            </div>
+
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                {% if job.work_type %}
+                    {% if job.work_type == 'Remote' %}
+                        <span class="tag tag-remote">Remote</span>
+                    {% elif job.work_type == 'Onsite' %}
+                        <span class="tag tag-onsite">Onsite</span>
+                    {% else %}
+                        <span class="tag tag-hybrid">Hybrid</span>
+                    {% endif %}
+                {% endif %}
+                {% if job.employment_type %}
+                    {% if job.employment_type == 'Full-time' %}
+                        <span class="tag tag-full">Full-time</span>
+                    {% elif job.employment_type == 'Part-time' %}
+                        <span class="tag tag-part">Part-time</span>
+                    {% else %}
+                        <span class="tag tag-contract">{{ job.employment_type }}</span>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            {% if job.source %}
+            <div style="font-size:0.78rem; color: var(--text-light);">via {{ job.source }}</div>
+            {% endif %}
+
+            <div class="card-actions">
+                <a href="/applications/add" class="btn btn-primary">Apply</a>
+                <a href="/jobs/edit/{{ job._id }}" class="btn btn-outline">Edit</a>
+                <form method="POST" action="/jobs/delete/{{ job._id }}" style="display:inline;" onsubmit="return confirm('Remove this job?')">
+                    <button type="submit" class="btn btn-danger">Remove</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h3>No jobs saved yet</h3>
+        <p>Add jobs you're interested in to track them here.</p>
+        <br>
+        <a href="/jobs/add" class="btn btn-primary">Add a Job</a>
+    </div>
+    {% endif %}
+</main>
+
+<script>
+const searchInput = document.getElementById('searchInput');
+const typeFilter = document.getElementById('typeFilter');
+const workFilter = document.getElementById('workFilter');
+const cards = document.querySelectorAll('.job-card');
+
+function filterCards() {
+    const query = searchInput.value.toLowerCase();
+    const type = typeFilter.value;
+    const work = workFilter.value;
+    cards.forEach(card => {
+        const matchSearch = card.dataset.title.includes(query) || card.dataset.company.includes(query);
+        const matchType = !type || card.dataset.type === type;
+        const matchWork = !work || card.dataset.work === work;
+        card.style.display = (matchSearch && matchType && matchWork) ? '' : 'none';
+    });
+}
+
+searchInput.addEventListener('input', filterCards);
+typeFilter.addEventListener('change', filterCards);
+workFilter.addEventListener('change', filterCards);
+</script>
+
+</body>
+</html>
